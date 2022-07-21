@@ -1,5 +1,6 @@
 import { normalize } from 'path';
 import { getBabelInputPlugin } from "@rollup/plugin-babel";
+import commonjs from '@rollup/plugin-commonjs';
 
 function replacePlugin(config, name, plugin) {
   if (typeof name == 'string') {
@@ -17,6 +18,20 @@ export default args => {
   const result = args.configDefaultConfig;
   const [jsConfig, mJsConfig] = result;
   [jsConfig, mJsConfig].forEach(config => {
+    //https://github.com/rollup/plugins/tree/master/packages/commonjs#strictrequires
+    const newCommonjs = commonjs({
+      //origin
+      extensions: ['.js', '.jsx', '.tsx', '.ts'],
+      transformMixedEsModules: true,
+      requireReturnsDefault: 'auto',
+      ignore: id => (config.external || []).some(value => new RegExp(value).test(id))
+
+      //patch
+      ,strictrequires: false
+      ,ignoreDynamicRequires: true
+    });
+    replacePlugin(config, 10, newCommonjs);
+
     //https://zh-hans.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html#manual-babel-setup
     const newBabelPlugin = getBabelInputPlugin({
       sourceMaps: !production,
