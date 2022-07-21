@@ -24,7 +24,7 @@ export default args => {
       extensions: ['.js', '.jsx', '.tsx', '.ts'],
       transformMixedEsModules: true,
       requireReturnsDefault: 'auto',
-      ignore: id => (config.external || []).some(value => new RegExp(value).test(id))
+      ignore: id => (/* config.external || */ []).some(value => new RegExp(value).test(id))
 
       //patch
       ,strictrequires: false
